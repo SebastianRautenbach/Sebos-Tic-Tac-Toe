@@ -11,7 +11,7 @@
 							 / / / / __/   / / / _ `/ __/   / / / _ \/ -_)
 							/_/ /_/\__/   /_/  \_,_/\__/   /_/  \___/\__/
 
-									 _ __  __      ___     ____
+							         _ __  __      ___     ____
 							 _    __(_) /_/ /     / _ |   /  _/
 							| |/|/ / / __/ _ \   / __ |_ _/ /
 							|__,__/_/\__/_//_/  /_/ |_(_)___/
@@ -118,6 +118,8 @@ public://              r  c
 			return m_tile_layout[0][0].player_chose;
 		}
 		
+
+		// This part of the program checks if all tiles are filled
 		bool all_tiles_taken = true;
 		
 		for (int col = 0; col < 3; col++)
@@ -338,23 +340,23 @@ public:
 	bool side_pattern() {
 		if (!m_grid->m_tile_layout[0][0].checked)
 		{
-			m_grid->choose_block(_AI, 0, 0);
-			return true;
+			if(m_grid->choose_block(_AI, 0, 0))
+				return true;
 		}
 		if (!m_grid->m_tile_layout[2][2].checked)
 		{
-			m_grid->choose_block(_AI, 2, 2);
-			return true;
+			if(m_grid->choose_block(_AI, 2, 2))
+				return true;
 		}
 		if (!m_grid->m_tile_layout[0][2].checked)
 		{
-			m_grid->choose_block(_AI, 0, 2);
-			return true;
+			if(m_grid->choose_block(_AI, 0, 2))
+				return true;
 		}
 		if (!m_grid->m_tile_layout[2][0].checked)
 		{
-			m_grid->choose_block(_AI, 0, 2);
-			return true;
+			if(m_grid->choose_block(_AI, 0, 2))
+				return true;
 		}
 		return false;
 	}
@@ -365,8 +367,8 @@ public:
 			{
 				if (!m_grid->m_tile_layout[row][col].checked)
 				{
-					m_grid->choose_block(_AI, row, col);
-					return true;
+					if(m_grid->choose_block(_AI, row, col))
+						return true;
 				}
 			}
 		}
@@ -512,5 +514,7 @@ int main() {
 			break;
 		}
 	}
+	system("pause");
 	
+	return 0;
 }
