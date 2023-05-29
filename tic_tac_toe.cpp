@@ -1,8 +1,11 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <fstream>
+
 #define _AI 0
 #define _PLAYER 1
+#define _INVALID_PLAYER -1
 
 
 /*
@@ -11,19 +14,18 @@
 							 / / / / __/   / / / _ `/ __/   / / / _ \/ -_)
 							/_/ /_/\__/   /_/  \_,_/\__/   /_/  \___/\__/
 
-							         _ __  __      ___     ____
+									 _ __  __      ___     ____
 							 _    __(_) /_/ /     / _ |   /  _/
 							| |/|/ / / __/ _ \   / __ |_ _/ /
 							|__,__/_/\__/_//_/  /_/ |_(_)___/
-
-
-
 */
 
 
 
 
-/*This is a simple Tic Tac Toe game with simple checks but
+/*
+
+  This is a simple Tic Tac Toe game with simple checks but
   it has one feature that not a lot of tic tac toe's do,
   it has AI lol.
 
@@ -32,7 +34,7 @@
 
   This was created by Sebastian R. with no outside help, this
   was to test my skill and yes there can be major improvements made
-  my next goal would be to make this AI learn from past playthroughs 
+  my next goal would be to make this AI learn from past play troughs 
 
 */
 
@@ -61,7 +63,7 @@ public://              r  c
 			for (int col = 0; col < 3; col++)
 			{
 				m_tile_layout[row][col].checked = false;
-				m_tile_layout[row][col].player_chose = -1;
+				m_tile_layout[row][col].player_chose = _INVALID_PLAYER;
 			}
 		}
 	}
@@ -70,7 +72,7 @@ public://              r  c
 	}
 	bool choose_block(int player, int row, int col) // setting info in a tile and checking if its taken or not
 	{
-		if(m_tile_layout[row][col].player_chose != -1)
+		if(m_tile_layout[row][col].player_chose != _INVALID_PLAYER)
 		{ 
 			std::cout << "tile already took. row:" << row << " col:" << col << std::endl;
 			return false; 
@@ -85,35 +87,35 @@ public://              r  c
 	int check_for_win() // lucky there is only 8 win combos XD so I might as well write all of them
 	{
 
-		if (m_tile_layout[0][0].player_chose == m_tile_layout[0][1].player_chose && m_tile_layout[0][0].player_chose == m_tile_layout[0][2].player_chose && m_tile_layout[0][2].player_chose != -1)
+		if (m_tile_layout[0][0].player_chose == m_tile_layout[0][1].player_chose && m_tile_layout[0][0].player_chose == m_tile_layout[0][2].player_chose && m_tile_layout[0][2].player_chose != _INVALID_PLAYER)
 		{
 			return m_tile_layout[0][0].player_chose;
 		}
-		if (m_tile_layout[1][0].player_chose == m_tile_layout[1][1].player_chose && m_tile_layout[1][0].player_chose == m_tile_layout[1][2].player_chose && m_tile_layout[1][2].player_chose != -1)
+		if (m_tile_layout[1][0].player_chose == m_tile_layout[1][1].player_chose && m_tile_layout[1][0].player_chose == m_tile_layout[1][2].player_chose && m_tile_layout[1][2].player_chose != _INVALID_PLAYER)
 		{
 			return m_tile_layout[1][0].player_chose;
 		}
-		if (m_tile_layout[2][0].player_chose == m_tile_layout[2][1].player_chose && m_tile_layout[2][0].player_chose == m_tile_layout[2][2].player_chose && m_tile_layout[2][2].player_chose != -1)
+		if (m_tile_layout[2][0].player_chose == m_tile_layout[2][1].player_chose && m_tile_layout[2][0].player_chose == m_tile_layout[2][2].player_chose && m_tile_layout[2][2].player_chose != _INVALID_PLAYER)
 		{
 			return m_tile_layout[2][0].player_chose;
 		}
-		if (m_tile_layout[0][0].player_chose == m_tile_layout[1][0].player_chose && m_tile_layout[0][0].player_chose == m_tile_layout[2][0].player_chose && m_tile_layout[2][0].player_chose != -1)
+		if (m_tile_layout[0][0].player_chose == m_tile_layout[1][0].player_chose && m_tile_layout[0][0].player_chose == m_tile_layout[2][0].player_chose && m_tile_layout[2][0].player_chose != _INVALID_PLAYER)
 		{
 			return m_tile_layout[0][0].player_chose;
 		}
-		if (m_tile_layout[0][1].player_chose == m_tile_layout[1][1].player_chose && m_tile_layout[0][1].player_chose == m_tile_layout[2][1].player_chose && m_tile_layout[2][1].player_chose != -1)
+		if (m_tile_layout[0][1].player_chose == m_tile_layout[1][1].player_chose && m_tile_layout[0][1].player_chose == m_tile_layout[2][1].player_chose && m_tile_layout[2][1].player_chose != _INVALID_PLAYER)
 		{
 			return m_tile_layout[0][1].player_chose;
 		}
-		if (m_tile_layout[0][2].player_chose == m_tile_layout[1][2].player_chose && m_tile_layout[0][2].player_chose == m_tile_layout[2][2].player_chose && m_tile_layout[2][2].player_chose != -1)
+		if (m_tile_layout[0][2].player_chose == m_tile_layout[1][2].player_chose && m_tile_layout[0][2].player_chose == m_tile_layout[2][2].player_chose && m_tile_layout[2][2].player_chose != _INVALID_PLAYER)
 		{
 			return m_tile_layout[0][2].player_chose;
 		}
-		if (m_tile_layout[0][0].player_chose == m_tile_layout[1][1].player_chose && m_tile_layout[0][0].player_chose == m_tile_layout[2][2].player_chose && m_tile_layout[2][2].player_chose != -1)
+		if (m_tile_layout[0][0].player_chose == m_tile_layout[1][1].player_chose && m_tile_layout[0][0].player_chose == m_tile_layout[2][2].player_chose && m_tile_layout[2][2].player_chose != _INVALID_PLAYER)
 		{
 			return m_tile_layout[0][0].player_chose;
 		}
-		if (m_tile_layout[2][0].player_chose == m_tile_layout[1][1].player_chose && m_tile_layout[2][0].player_chose == m_tile_layout[0][2].player_chose && m_tile_layout[0][2].player_chose != -1)
+		if (m_tile_layout[2][0].player_chose == m_tile_layout[1][1].player_chose && m_tile_layout[2][0].player_chose == m_tile_layout[0][2].player_chose && m_tile_layout[0][2].player_chose != _INVALID_PLAYER)
 		{
 			return m_tile_layout[0][0].player_chose;
 		}
@@ -139,6 +141,30 @@ public://              r  c
 		
 		return -1;
 	}
+	std::string get_grid_infromat() {
+		std::string final_data_fromat;
+		for (int row = 0; row < 3; row++)
+		{
+			for (int col = 0; col < 3; col++)
+			{
+				if (m_tile_layout[row][col].player_chose == _PLAYER)
+				{
+					final_data_fromat += "x";
+				}
+				if (m_tile_layout[row][col].player_chose == _INVALID_PLAYER)
+				{
+					final_data_fromat += "~";
+				}
+				if (m_tile_layout[row][col].player_chose == _AI)
+				{
+					final_data_fromat += "o";
+				}
+				
+			}
+			final_data_fromat += ",";
+		}
+		return final_data_fromat;
+	}
 };
 
 class super_AI {
@@ -147,7 +173,7 @@ public:
 	super_AI(grid& grid_ref)
 		:m_grid(&grid_ref)
 	{
-
+		
 	}
 	~super_AI() {}
 	void make_move()
@@ -166,6 +192,30 @@ public:
  		{
  			return;
  		}
+	}
+
+	int int_to_str(const char* _Ptr, size_t* _Idx = nullptr, int _Base = 10) 
+	{
+	
+			int& _Errno_ref = errno; // Nonzero cost, pay it once
+			char* _Eptr;
+			_Errno_ref = 0;
+			const long _Ans = _CSTD strtol(_Ptr, &_Eptr, _Base);
+
+			if (_Ptr == _Eptr) {
+				/*_Xinvalid_argument("invalid stoi argument");*/
+			}
+
+			if (_Errno_ref == ERANGE) {
+				/*_Xout_of_range("stoi argument out of range");*/
+			}
+
+			if (_Idx) {
+				*_Idx = static_cast<size_t>(_Eptr - _Ptr);
+			}
+
+			return static_cast<int>(_Ans);
+		
 	}
 	bool check_tiles_for_player() {
 		
@@ -374,7 +424,21 @@ public:
 		}
 		return false;
 	}
-	
+	void find_pattern()
+	{
+ 		std::string _get_line, _file_data;
+ 		std::fstream data_file("C:/Users/sebog/Desktop/file_test/1.txt");
+		std::string grid_fromat = m_grid->get_grid_infromat(); //get layout of current game
+ 
+ 		while (std::getline(data_file, _get_line)) {
+ 			_file_data += _get_line;
+ 			_file_data += '\n';
+ 		}
+		//going to compare crnt game with past games
+		//still dont know how i am gonna achieve it but hey :)
+
+
+	}
 	// will add other patterns some other time
 };
 
@@ -480,10 +544,11 @@ int main() {
 	player_console console;
 	bool someone_won = false;
 
+
 	while (!someone_won)
 	{
 		m_player.promt_block_choose();
-		if (m_grid->check_for_win() != -1 && m_grid->check_for_win() != 2)
+		if (m_grid->check_for_win() != _INVALID_PLAYER && m_grid->check_for_win() != 2)
 		{
 			std::cout << "Player:" << m_grid->check_for_win() << " WON!!" << std::endl;
 			someone_won = true;
@@ -500,7 +565,7 @@ int main() {
 		m_AI.make_move();
 		console.clear_console();
 		console.draw_grid_simple(*m_grid);
-		if (m_grid->check_for_win() != -1 && m_grid->check_for_win() != 2)
+		if (m_grid->check_for_win() != _INVALID_PLAYER && m_grid->check_for_win() != 2)
 		{
 			std::cout << "Player:" << m_grid->check_for_win() << " WON!!" << std::endl;
 			someone_won = true;
