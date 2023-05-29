@@ -194,29 +194,6 @@ public:
  		}
 	}
 
-	int int_to_str(const char* _Ptr, size_t* _Idx = nullptr, int _Base = 10) 
-	{
-	
-			int& _Errno_ref = errno; // Nonzero cost, pay it once
-			char* _Eptr;
-			_Errno_ref = 0;
-			const long _Ans = _CSTD strtol(_Ptr, &_Eptr, _Base);
-
-			if (_Ptr == _Eptr) {
-				/*_Xinvalid_argument("invalid stoi argument");*/
-			}
-
-			if (_Errno_ref == ERANGE) {
-				/*_Xout_of_range("stoi argument out of range");*/
-			}
-
-			if (_Idx) {
-				*_Idx = static_cast<size_t>(_Eptr - _Ptr);
-			}
-
-			return static_cast<int>(_Ans);
-		
-	}
 	bool check_tiles_for_player() {
 		
 		for (int col = 0; col < 3; col++)
