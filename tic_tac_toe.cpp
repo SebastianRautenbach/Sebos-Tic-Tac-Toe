@@ -9,6 +9,12 @@
 
 
 /*
+								____                              _
+							   / __ \__  ______  ____ _____ ___  (_)____
+							  / / / / / / / __ \/ __ `/ __ `__ \/ / ___/
+							 / /_/ / /_/ / / / / /_/ / / / / / / / /__
+							/_____/\__, /_/ /_/\__,_/_/ /_/ /_/_/\___/
+								  /____/
 							 _______       ______           ______
 							/_  __(_)___  /_  __/__ _____  /_  __/__  ___
 							 / / / / __/   / / / _ `/ __/   / / / _ \/ -_)
@@ -40,9 +46,10 @@
 
 //  r|c r|c r|c
 //  ___________
-//  0|0 1|0 2|0
-//  0|1 1|1 2|1
-//  0|2 1|2 2|2
+//  0|0 1|0 2|0 ...
+//  0|1 1|1 2|1 ...
+//  0|2 1|2 2|2	...
+//  ... ... ...
 
 class tile { // this class is self explanatory 
 public:
@@ -53,14 +60,20 @@ public:
 
 
 class grid { // the grid is a collection of a 2 Dimensional array of tiles
-public://              r  c  
-	tile m_tile_layout[3][3];
+public:
+	size_t grid_size = 3;
+	tile** m_tile_layout;
 
 	grid() // this sets up the grid and nulls out any null values in the grid
 	{
-		for (int row = 0; row < 3; row++)
+		std::cout << "please select grid size:";
+		std::cin >> grid_size;
+		system("cls");
+
+		resize_grid_arr(grid_size);
+		for (int row = 0; row < grid_size; row++)
 		{
-			for (int col = 0; col < 3; col++)
+			for (int col = 0; col < grid_size; col++)
 			{
 				m_tile_layout[row][col].checked = false;
 				m_tile_layout[row][col].player_chose = _INVALID_PLAYER;
@@ -68,7 +81,7 @@ public://              r  c
 		}
 	}
 	~grid() {
-		delete[] m_tile_layout;
+		delete_grid();
 	}
 	bool choose_block(int player, int row, int col) // setting info in a tile and checking if its taken or not
 	{
@@ -82,6 +95,18 @@ public://              r  c
 			m_tile_layout[row][col].player_chose = player;
 			std::cout << "tile took. row:" << row << " col:" << col << std::endl;
 			return true;
+		}
+	}
+	
+	void inline delete_grid() {
+		for (int i = 0; i < grid_size; i++)
+			delete[] m_tile_layout[i];
+	}
+	void resize_grid_arr(size_t arr_size = 3) {
+		m_tile_layout = new tile * [arr_size];
+		for (int i = 0; i < arr_size; i++)
+		{
+			m_tile_layout[i] = new tile[arr_size];
 		}
 	}
 	int check_for_win() // lucky there is only 8 win combos XD so I might as well write all of them
@@ -124,9 +149,9 @@ public://              r  c
 		// This part of the program checks if all tiles are filled
 		bool all_tiles_taken = true;
 		
-		for (int col = 0; col < 3; col++)
+		for (int col = 0; col < grid_size; col++)
 		{
-			for (int row = 0; row < 3; row++)
+			for (int row = 0; row < grid_size; row++)
 			{
 				if (!m_tile_layout[row][col].checked)
 				{
@@ -143,9 +168,9 @@ public://              r  c
 	}
 	std::string get_grid_infromat() {
 		std::string final_data_fromat;
-		for (int row = 0; row < 3; row++)
+		for (int row = 0; row < grid_size; row++)
 		{
-			for (int col = 0; col < 3; col++)
+			for (int col = 0; col < grid_size; col++)
 			{
 				if (m_tile_layout[row][col].player_chose == _PLAYER)
 				{
@@ -193,7 +218,7 @@ public:
  			return;
  		}
 	}
-
+	
 	bool check_tiles_for_player() {
 		
 		for (int col = 0; col < 3; col++)
@@ -411,8 +436,7 @@ public:
  			_file_data += _get_line;
  			_file_data += '\n';
  		}
-		//going to compare crnt game with past games
-		//still dont know how i am gonna achieve it but hey :)
+		
 
 
 	}
@@ -427,9 +451,9 @@ public:
 	}
 	void draw_grid_debug(grid& m_grid) //just loops through every array index and draws its state
 	{
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < m_grid.grid_size; i++)
 		{
-			for (int y = 0; y < 3; y++)
+			for (int y = 0; y < m_grid.grid_size; y++)
 			{
 				std::cout << " {row:" << y << " col:" << i << " player_val:" << m_grid.m_tile_layout[y][i].player_chose << "}";
 			}
@@ -438,9 +462,9 @@ public:
 	}
 	void draw_grid_simple(grid& m_grid) //just loops through every array index and draws its state
 	{
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < m_grid.grid_size; i++)
 		{
-			for (int y = 0; y < 3; y++)
+			for (int y = 0; y < m_grid.grid_size; y++)
 			{
 				if (m_grid.m_tile_layout[y][i].player_chose == 1)
 				{
@@ -493,7 +517,7 @@ public:
 		row += the_chosen_one[0];
 		col += the_chosen_one[1];
 
-		if (stoi(row) > 2 || stoi(col) > 2)
+		if (stoi(row) > m_grid->grid_size || stoi(col) > m_grid->grid_size)
 		{
 			console.clear_console();
 			console.draw_text("numbers should not exceed grid size! \n", false);
@@ -515,6 +539,9 @@ public:
 
 int main() {
 	
+
+
+
 	grid* m_grid = new grid;
 	super_AI m_AI(*m_grid);
 	player m_player(*m_grid);
