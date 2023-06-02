@@ -97,7 +97,7 @@ public:
 			return true;
 		}
 	}
-	
+
 	void inline delete_grid() {
 		for (int i = 0; i < grid_size; i++)
 			delete[] m_tile_layout[i];
@@ -109,42 +109,98 @@ public:
 			m_tile_layout[i] = new tile[arr_size];
 		}
 	}
-	int check_for_win() // lucky there is only 8 win combos XD so I might as well write all of them
-	{
 
-		if (m_tile_layout[0][0].player_chose == m_tile_layout[0][1].player_chose && m_tile_layout[0][0].player_chose == m_tile_layout[0][2].player_chose && m_tile_layout[0][2].player_chose != _INVALID_PLAYER)
-		{
-			return m_tile_layout[0][0].player_chose;
-		}
-		if (m_tile_layout[1][0].player_chose == m_tile_layout[1][1].player_chose && m_tile_layout[1][0].player_chose == m_tile_layout[1][2].player_chose && m_tile_layout[1][2].player_chose != _INVALID_PLAYER)
-		{
-			return m_tile_layout[1][0].player_chose;
-		}
-		if (m_tile_layout[2][0].player_chose == m_tile_layout[2][1].player_chose && m_tile_layout[2][0].player_chose == m_tile_layout[2][2].player_chose && m_tile_layout[2][2].player_chose != _INVALID_PLAYER)
-		{
-			return m_tile_layout[2][0].player_chose;
-		}
-		if (m_tile_layout[0][0].player_chose == m_tile_layout[1][0].player_chose && m_tile_layout[0][0].player_chose == m_tile_layout[2][0].player_chose && m_tile_layout[2][0].player_chose != _INVALID_PLAYER)
-		{
-			return m_tile_layout[0][0].player_chose;
-		}
-		if (m_tile_layout[0][1].player_chose == m_tile_layout[1][1].player_chose && m_tile_layout[0][1].player_chose == m_tile_layout[2][1].player_chose && m_tile_layout[2][1].player_chose != _INVALID_PLAYER)
-		{
-			return m_tile_layout[0][1].player_chose;
-		}
-		if (m_tile_layout[0][2].player_chose == m_tile_layout[1][2].player_chose && m_tile_layout[0][2].player_chose == m_tile_layout[2][2].player_chose && m_tile_layout[2][2].player_chose != _INVALID_PLAYER)
-		{
-			return m_tile_layout[0][2].player_chose;
-		}
-		if (m_tile_layout[0][0].player_chose == m_tile_layout[1][1].player_chose && m_tile_layout[0][0].player_chose == m_tile_layout[2][2].player_chose && m_tile_layout[2][2].player_chose != _INVALID_PLAYER)
-		{
-			return m_tile_layout[0][0].player_chose;
-		}
-		if (m_tile_layout[2][0].player_chose == m_tile_layout[1][1].player_chose && m_tile_layout[2][0].player_chose == m_tile_layout[0][2].player_chose && m_tile_layout[0][2].player_chose != _INVALID_PLAYER)
-		{
-			return m_tile_layout[0][0].player_chose;
-		}
+	int grid_row_col_check(int check_sequence, int stationary_sequence) // This will get the job done to check for any 3 sequencial patterns
+	{
+		size_t incremented_grid_win = 0, max_left = 0, max_right= 0;
+		int last_player_id = -1;
 		
+		
+		
+		// do right jump to find max block so that a null array element cant be called
+		for (int i = check_sequence; i < check_sequence + 2; i++)
+		{
+			if (i < grid_size - 1)
+			{
+				max_right++;
+			}
+		}
+
+		// do left jump to find max block so that a null array element cant be called
+		for (int i = check_sequence; i > check_sequence - 2; i--)
+		{
+ 			if (i > 0) // correct
+ 			{
+				max_left++;
+			}
+			
+		}
+
+		//do a check to see in the range we obtained from the last two loops if there is three in a row or column
+		for (int i = check_sequence - max_left; i < check_sequence + max_right + 1; i ++) {
+			if (m_tile_layout[stationary_sequence][i].player_chose == last_player_id && last_player_id != _INVALID_PLAYER)
+			{
+				incremented_grid_win++;
+			}
+			else
+			{
+				incremented_grid_win = 0;
+				last_player_id = m_tile_layout[stationary_sequence][i].player_chose;
+			}
+			if (incremented_grid_win > 1)
+			{
+				return last_player_id;
+			}
+		}
+		return _INVALID_PLAYER;
+	}
+	int grid_diagonal_check(int row, int col) {
+		
+		size_t  max_left = 0, max_right = 0, max_up = 0, max_down = 0;
+
+
+		// these few if statements is there just to avoid null indexes
+		if (row - 1 > 0)
+			max_left = row - 1;
+		if (row + 1 < grid_size)
+			max_right = row + 1;
+		if (col - 1 > 0)
+			max_up = col - 1;
+		if (col + 1 < grid_size)
+			max_down = col + 1;
+
+
+		// check for any aligning diagonals from a player  
+		if (m_tile_layout[max_left][max_up].player_chose == m_tile_layout[max_right][max_down].player_chose &&
+			m_tile_layout[max_right][max_down].player_chose != _INVALID_PLAYER)
+		{
+			return m_tile_layout[max_right][max_down].player_chose;
+		}
+		if (m_tile_layout[max_left][max_down].player_chose == m_tile_layout[max_right][max_up].player_chose &&
+			m_tile_layout[max_left][max_down].player_chose != _INVALID_PLAYER)
+		{
+			return m_tile_layout[max_left][max_down].player_chose;
+		}
+
+		return _INVALID_PLAYER;
+	}
+
+	int check_for_win()
+
+	{
+		for (int col = 0; col < grid_size; col++)
+		{
+			for (int row = 0; row < grid_size; row++)
+			{
+				if (m_tile_layout[row][col].player_chose != -1)
+				{
+					grid_diagonal_check(row, col);
+					grid_row_col_check(col, row);
+					grid_row_col_check(row,col);
+				}
+			}
+		}
+
 
 		// This part of the program checks if all tiles are filled
 		bool all_tiles_taken = true;
@@ -218,7 +274,7 @@ public:
  			return;
  		}
 	}
-	
+
 	bool check_tiles_for_player() {
 		
 		for (int col = 0; col < 3; col++)
@@ -252,7 +308,7 @@ public:
 		}
 		return false;
 	}
-	bool check_next_tiles(int opp_plr_id, int player_id, int row, int col)
+	bool check_next_tiles(int opp_plr_id, int player_id, int row, int col) // gonna needa change this 
 	{
 
 		{	// Diagonal Check
@@ -447,7 +503,7 @@ class player_console {
 public:
 	void clear_console() //clears the console
 	{
-		system("cls");
+		//system("cls");
 	}
 	void draw_grid_debug(grid& m_grid) //just loops through every array index and draws its state
 	{
