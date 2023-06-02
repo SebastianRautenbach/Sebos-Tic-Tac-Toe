@@ -9,7 +9,7 @@
 
 
 /*
-								____                              _
+							    ____                              _
 							   / __ \__  ______  ____ _____ ___  (_)____
 							  / / / / / / / __ \/ __ `/ __ `__ \/ / ___/
 							 / /_/ / /_/ / / / / /_/ / / / / / / / /__
@@ -20,7 +20,7 @@
 							 / / / / __/   / / / _ `/ __/   / / / _ \/ -_)
 							/_/ /_/\__/   /_/  \_,_/\__/   /_/  \___/\__/
 
-									 _ __  __      ___     ____
+								 _ __  __      ___     ____
 							 _    __(_) /_/ /     / _ |   /  _/
 							| |/|/ / / __/ _ \   / __ |_ _/ /
 							|__,__/_/\__/_//_/  /_/ |_(_)___/
@@ -97,11 +97,12 @@ public:
 			return true;
 		}
 	}
-
+	// the grid needs to be removed from the heap
 	void inline delete_grid() {
 		for (int i = 0; i < grid_size; i++)
 			delete[] m_tile_layout[i];
 	}
+	// this is to resize the grid dynamically 
 	void resize_grid_arr(size_t arr_size = 3) {
 		m_tile_layout = new tile * [arr_size];
 		for (int i = 0; i < arr_size; i++)
@@ -109,8 +110,8 @@ public:
 			m_tile_layout[i] = new tile[arr_size];
 		}
 	}
-
-	int grid_row_col_check(int check_sequence, int stationary_sequence) // This will get the job done to check for any 3 sequencial patterns
+	// this checks for matching tiles with the same player ID in a vertical and horizontal orientation 
+	int grid_row_col_check(int check_sequence, int stationary_sequence, int max_size = 2) // This will get the job done to check for any defined number sequential patterns
 	{
 		size_t incremented_grid_win = 0, max_left = 0, max_right= 0;
 		int last_player_id = -1;
@@ -118,7 +119,7 @@ public:
 		
 		
 		// do right jump to find max block so that a null array element cant be called
-		for (int i = check_sequence; i < check_sequence + 2; i++)
+		for (int i = check_sequence; i < check_sequence + max_size; i++)
 		{
 			if (i < grid_size - 1)
 			{
@@ -127,7 +128,7 @@ public:
 		}
 
 		// do left jump to find max block so that a null array element cant be called
-		for (int i = check_sequence; i > check_sequence - 2; i--)
+		for (int i = check_sequence; i > check_sequence - max_size; i--)
 		{
  			if (i > 0) // correct
  			{
@@ -154,7 +155,8 @@ public:
 		}
 		return _INVALID_PLAYER;
 	}
-	int grid_diagonal_check(int row, int col) {
+	// this checks for matching tiles with the same player ID in a diagonal orientation 
+	int grid_diagonal_check(int row, int col, int max_size_up = 1, int max_size_down = 1) {
 		
 		size_t  max_left = 0, max_right = 0, max_up = 0, max_down = 0;
 
@@ -164,10 +166,10 @@ public:
 			max_left = row - 1;
 		if (row + 1 < grid_size)
 			max_right = row + 1;
-		if (col - 1 > 0)
-			max_up = col - 1;
-		if (col + 1 < grid_size)
-			max_down = col + 1;
+		if (col - max_size_up > 0)
+			max_up = col - max_size_up;
+		if (col + max_size_down < grid_size)
+			max_down = col + max_size_down;
 
 
 		// check for any aligning diagonals from a player  
@@ -194,9 +196,9 @@ public:
 			{
 				if (m_tile_layout[row][col].player_chose != -1)
 				{
-					grid_diagonal_check(row, col);
-					grid_row_col_check(col, row);
-					grid_row_col_check(row,col);
+					std::cout << grid_diagonal_check(row, col) << std::endl;
+					std::cout << grid_row_col_check(col, row) << std::endl;
+					std::cout << grid_row_col_check(row,col) << std::endl;
 				}
 			}
 		}
@@ -222,6 +224,7 @@ public:
 		
 		return -1;
 	}
+	
 	std::string get_grid_infromat() {
 		std::string final_data_fromat;
 		for (int row = 0; row < grid_size; row++)
@@ -299,7 +302,7 @@ public:
 			{
 				if (m_grid->m_tile_layout[row][col].player_chose == 0)
 				{
-					if (check_next_tiles(_AI, _AI, row, col))
+					if (check_next_tiles(_AI, _AI, row, col)) // time to change this
 					{
 						return true;
 					}
